@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOVE Fireworks</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    canvas {
+      display: block;
+    }
+    #love-text {
+      position: absolute;
+
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 5rem;
+      font-family: Arial, sans-serif;
+      color: red;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div id="love-text">LOVE</div>
+
+  <script>
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Firework {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height;
+        this.color = 'hsl(' + Math.random() * 360 + ', 100%, 50%)';
+        this.size = Math.random() * 5 + 2;
+        this.speedY = Math.random() * 4 + 3;
+        this.speedX = Math.random() * 2 - 1;
+        this.opacity = 1;
+      }
+
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        this.opacity -= 0.02;
+      }
+
+      draw() {
+        ctx.globalAlpha = this.opacity;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.closePath();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    let fireworks = [];
+
+    function handleFireworks() {
+      if (fireworks.length < 200) {
+        fireworks.push(new Firework());
+      }
+
+      for (let i = 0; i < fireworks.length; i++) {
+        fireworks[i].update();
+        fireworks[i].draw();
+
+        if (fireworks[i].opacity <= 0) {
+          fireworks.splice(i, 1);
+          i--;
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      handleFireworks();
+      requestAnimationFrame(animate);
+    }
+
+    setTimeout(() => {
+      document.getElementById('love-text').style.display = 'block';
+    }, 5000);
+
+    animate();
+  </script>
+</body>
+</html>
